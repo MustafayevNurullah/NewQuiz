@@ -57,6 +57,7 @@ namespace Quiz
         int a = 0;
         int correct = 0;
         int wrong = 0;
+
         int null_ = 0;
 
         int AsciCounter = 0;
