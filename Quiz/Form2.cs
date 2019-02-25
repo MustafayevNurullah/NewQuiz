@@ -58,6 +58,7 @@ namespace Quiz
         int correct = 0;
         int wrong = 0;
         int null_ = 0;
+
         int AsciCounter = 0;
         int counter;
         Point point = new Point();
