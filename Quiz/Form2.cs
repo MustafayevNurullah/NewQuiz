@@ -675,6 +675,7 @@ namespace Quiz
         {
             if (a == 0)
             {
+               // MessageBox.Show(Path_);
                 StreamReader streamReader = new StreamReader(Path_);
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<QuestionBlock>));
                 var obj = (List<QuestionBlock>)xmlSerializer.Deserialize(streamReader);
@@ -817,7 +818,19 @@ namespace Quiz
 
         private void ListView_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string[] File;
+
+            File = Directory.GetFiles("Quiz");
+
             Path_ = listView.SelectedItems[0].Text.ToString();
+            foreach (var item in File)
+            {
+
+                if (item.Contains(Path_))
+                {
+                    Path_ = item;
+                }
+            }
             ResetForm();
             ControlSizeQuiz();
         }

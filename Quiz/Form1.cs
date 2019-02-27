@@ -23,6 +23,7 @@ namespace Quiz
     {
         List<User> Users = new List<User>();
         Point point;
+
         public Form1()
         {
             InitializeComponent();
@@ -128,14 +129,15 @@ namespace Quiz
                 textBox.MouseLeave += TextBox_MouseLeave;
                 textBox.Text = "Enter Mail";
                 textBox.Name = "Mail";
+                TextBox textBox1 = new TextBox();
                 this.Controls.Add(textBox);
-                textBox.Location = new Point(400, 141);
-                textBox.Size = new Size(400, 20);
-                textBox.MouseClick += TextBox_MouseClick;
-                textBox.MouseLeave += TextBox_MouseLeave;
-                textBox.Text = "Enter Password";
-                textBox.Name = "Password";
-                this.Controls.Add(textBox);
+                textBox1.Location = new Point(400, 141);
+                textBox1.Size = new Size(400, 20);
+                textBox1.MouseClick += TextBox1_MouseClick;
+                textBox1.MouseLeave += TextBox1_MouseLeave;
+                textBox1.Text = "Enter Password";
+                textBox1.Name = "Password";
+                this.Controls.Add(textBox1);
                 point.X = 100;
                 point.Y = 60;
                 createButton("Ok", true);
@@ -180,13 +182,16 @@ namespace Quiz
             {
                 ResetForm();
                 Form2 form2 = new Form2();
+                
                 form2.ShowDialog();
             }
             if (button.Text== "Create Test")
             {
                 ResetForm();
                 Form3 form3 = new Form3();
+                this.Visible = false;
                 form3.ShowDialog();
+               
             }
         }
         void Login()
