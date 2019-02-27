@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -74,17 +76,17 @@ namespace Quiz
             radioButton.Name = Name;
             if (text == "Yes")
             {
-                radioButton.Image = Image.FromFile("Correct.png");
+                radioButton.Image = System.Drawing.Image.FromFile("Correct.png");
             }
             if (text == "No")
             {
-                radioButton.Image = Image.FromFile("Wrong.png");
+                radioButton.Image = System.Drawing.Image.FromFile("Wrong.png");
             }
             if (text == "")
             {
                 radioButton.Location = new Point(180, point.Y - 30);
 
-                radioButton.Image = Image.FromFile("Answer.png");
+                radioButton.Image = System.Drawing.Image.FromFile("Answer.png");
 
             }
 
@@ -319,20 +321,147 @@ namespace Quiz
                 bool q = false;
                 //  File.CreateText("Text.txt");
 
-
-                TextWriter tw = new StreamWriter("Text.txt");
-                int a = 0;
-                int b = 0;
-                foreach (var item in questionBlocks_)
+                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "PDF file|*.pdf", ValidateNames = true })
                 {
-                       tw.WriteLine($"{++a}  {item.Text}");
-                    foreach (var item_ in questionBlocks_[item.id].Answers)
-                    {
-                        tw.WriteLine($"{Asci[b]}  {item_.Text}");
-                        b++;
 
+                    if(sfd.ShowDialog()==DialogResult.OK)
+                    {
+                        iTextSharp.text.Document doc = new iTextSharp.text.Document(PageSize.A4.Rotate());
+
+                        PdfWriter.GetInstance(doc, new FileStream(sfd.FileName, FileMode.Create));
+                        doc.Open();
+
+
+                        for (int i = 0; i < questionBlocks_.Count; i++)
+                        {
+                            AsciCounter = 0;
+                            doc.Add(new iTextSharp.text.Paragraph($"{i + 1}.{questionBlocks_[i].Text}"));
+                            for (int j = 0; j < questionBlocks_[i].Answers.Count; j++)
+                            {
+                                string a = vsQuestion.Find(x => x == questionBlocks_[i].id).ToString();
+                                if (a != "0")
+                                {
+                                    int index = vsQuestion.IndexOf(Convert.ToInt32(a));
+                                    int index_ = questionBlocks_[i].Answers[j].IsCorrect.IndexOf("Yes");
+                                    string b = questionBlocks_[i].Answers.Find(x => x.id == vsAnswer[index]).ToString();
+                                    if (b != string.Empty)
+                                    {
+                                        if (questionBlocks_[i].Answers[j].id == vsAnswer[index] && questionBlocks_[i].Answers[j].IsCorrect == "Yes")
+                                        {
+                                            doc.Add(new iTextSharp.text.Paragraph($"You answer->Correct->{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                                            AsciCounter++;
+                                        }
+                                        else if (questionBlocks_[i].Answers[j].id == vsAnswer[index] && questionBlocks_[i].Answers[j].IsCorrect == "No")
+                                        {
+                                            doc.Add(new iTextSharp.text.Paragraph($"You answer->Wrong->{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                                            AsciCounter++;
+                                        }
+                                        else
+                                        {
+                                            if (j == index_)
+                                            {
+                                                doc.Add(new iTextSharp.text.Paragraph($"Correct->{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                                                AsciCounter++;
+                                            }
+                                            else
+                                            {
+
+
+
+                                                doc.Add(new iTextSharp.text.Paragraph($"{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                                                AsciCounter++;
+                                            }
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    if (questionBlocks_[i].Answers[j].IsCorrect == "Yes")
+                                    {
+                                        doc.Add(new iTextSharp.text.Paragraph($"Correct-->{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                                        AsciCounter++;
+                                    }
+                                    else
+                                    {
+
+                                    
+                                    doc.Add(new iTextSharp.text.Paragraph($"{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                                    AsciCounter++;
+                                }
+                                    }
+                            }
+                        }
+
+                        //for (int i = 0; i < questionBlocks_.Count; i++)
+                        //{
+                        //    AsciCounter = 0;
+                        //    doc.Add(new iTextSharp.text.Paragraph(questionBlocks_[i].Text));
+                        //    for (int j = 0; j < questionBlocks_[i].Answers.Count; j++)
+                        //    {
+                        //        foreach (var item in vsQuestion)
+                        //        {
+                        //            for (int t = 0; t < vsQuestion.Count; t++)
+                        //            {
+
+                        //                if (vsQuestion[t] == questionBlocks_[i].id)
+                        //                {
+
+                        //                    if (vsAnswer[t] == questionBlocks_[i].Answers[j].id)
+                        //                    {
+                        //                        doc.Add(new iTextSharp.text.Paragraph($"You answer->Correct->{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                        //                        AsciCounter++;
+                        //                        q = true;
+                        //                    }
+                        //                }
+                        //            else
+                        //            {
+                        //                doc.Add(new iTextSharp.text.Paragraph($"{Asci[AsciCounter]}) {questionBlocks_[i].Answers[j].Text}"));
+                        //                AsciCounter++;
+                        //                q = true;
+                        //            }
+                        //        }
+                        //    }
+                        //    }
+                        //    if(!q)
+                        //    {
+
+                        //    }
+
+                        //}
+
+
+
+
+
+                        doc.Close();
                     }
+
+
+
+
                 }
+
+
+
+
+
+
+
+
+                //    TextWriter tw = new StreamWriter("Text.txt");
+                //int a = 0;
+                //int b = 0;
+                //foreach (var item in questionBlocks_)
+                //{
+                //       tw.WriteLine($"{++a}  {item.Text}");
+                //    foreach (var item_ in questionBlocks_[item.id].Answers)
+                //    {
+                //        tw.WriteLine($"{Asci[b]}  {item_.Text}");
+                //        b++;
+
+                //    }
+                //}
 
 
 
@@ -380,7 +509,7 @@ namespace Quiz
                 //}
 
 
-                tw.Close();
+                //tw.Close();
 
 
             }
@@ -390,9 +519,12 @@ namespace Quiz
                 {
                     if(item is TextBox textBox)
                     {
-                        int.TryParse(textBox.Text, out question_counter);
-                        ResetForm();
-                        FormLoad("");
+                        if (textBox.Text != string.Empty &&
+                        int.TryParse(textBox.Text, out question_counter))
+                        {
+                            ResetForm();
+                            FormLoad("");
+                        }
                     }
                 }                
             }

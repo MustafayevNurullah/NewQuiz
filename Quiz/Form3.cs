@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -200,17 +202,17 @@ namespace Quiz
             radioButton.Name = Name;
             if (text == "Yes")
             {
-                radioButton.Image = Image.FromFile("Correct.png");
+                radioButton.Image = System.Drawing.Image.FromFile("Correct.png");
             }
             if (text == "No")
             {
-                radioButton.Image = Image.FromFile("Wrong.png");
+                radioButton.Image = System.Drawing.Image.FromFile("Wrong.png");
             }
             if (text == "")
             {
                 radioButton.Location = new Point(180, point.Y - 30);
 
-                radioButton.Image = Image.FromFile("Answer.png");
+                radioButton.Image = System.Drawing.Image.FromFile("Answer.png");
 
             }
 
@@ -545,9 +547,127 @@ namespace Quiz
             //MessageBox.Show(RadiobuttunList[createQuestionCounter]);
             ButonEnableTrue();
         }
+        
         private void Button_Click(object sender, EventArgs e)
         {
             Button button = sender as Button;
+            if(button.Text=="Delete Page")
+            {
+               if(questionBlock.Count!=0)
+                {
+                    int pointy_ = 0;
+                    
+                        questionBlock.RemoveAt(createQuestionCounter);
+                    counter++;
+                    createQuestionCounter++;
+                    ResetForm();
+                    point.Y = 36;
+                    MessageBox.Show(questionBlock.Count.ToString());
+                    CreateTextLabel(questionBlock[createQuestionCounter].Text, string.Empty, true);
+                    _CreateTextLabel(string.Empty);
+                    AsciCounter = 0;
+                    for (int i = 0; i < questionBlock[createQuestionCounter].Answers.Count; i++)
+                    {
+                        point.Y += 70;
+                        CreateAnswerLabel(questionBlock[createQuestionCounter].Answers[i].Text, true);
+                        _CreateanswerLabel(radiobuttonconter.ToString());
+                        createRadioButton(AsciCounter.ToString());
+                        AsciCounter++;
+                    }
+                    AsciCounter = questionBlock[createQuestionCounter].Answers.Count;
+                    pointy_ = point.Y;
+                    point.X = 803;
+                    point.Y = 297;
+                    createButton("Add", true);
+                    point.Y = 197;
+                    createButton("Remove", false);
+                    point.Y = 97;
+                    createButton("Delete Page", true);
+                    point.Y = 120;
+                    createButton("AddPage", true);
+                    point.X = 36;
+                    point.Y = 36;
+                    createButton("Save", false);
+                    point.Y = 477;
+                    if (createQuestionCounter == questionBlock.Count - 1)
+                    {
+                        point.X = 200;
+                        createButton("Next", false);
+                        point.X = 100;
+                        createButton("Back", true);
+                    }
+                    else
+                    {
+                        point.X = 200;
+                        createButton("Next", true);
+                        point.X = 100;
+                        createButton("Back", true);
+                    }
+
+                    point.X = 803;
+                    point.Y = 297;
+                    createButton("Add", true);
+                    point.Y = 197;
+                    point.X = 36;
+                    point.Y = 36;
+                    createButton("Save", true);
+                    point.Y = pointy_ + 70;
+                }
+                else
+                {
+                    int pointy;
+                    
+                        questionBlock.RemoveAt(createQuestionCounter-1);
+                    counter--;
+                    createQuestionCounter--;
+                    ResetForm();
+                    point.Y = 36;
+                    CreateTextLabel(questionBlock[createQuestionCounter].Text, string.Empty, true);
+                    _CreateTextLabel(string.Empty);
+                    AsciCounter = 0;
+                    for (int i = 0; i < questionBlock[createQuestionCounter].Answers.Count; i++)
+                    {
+                        point.Y += 70;
+                        CreateAnswerLabel(questionBlock[createQuestionCounter].Answers[i].Text, true);
+                        _CreateanswerLabel(radiobuttonconter.ToString());
+                        createRadioButton(AsciCounter.ToString());
+                        AsciCounter++;
+                    }
+                    pointy = point.Y;
+                    AsciCounter = 0;
+                    point.X = 803;
+                    point.Y = 297;
+                    createButton("Add", true);
+                    point.Y = 197;
+                    createButton("Remove", false);
+                    point.Y = 97;
+                    createButton("Delete Page", true);
+                    point.Y = 120;
+                    createButton("AddPage", true);
+                    point.X = 36;
+                    point.Y = 36;
+                    createButton("Save", false);
+                    point.Y = 477;
+                    if (createQuestionCounter == 0)
+                    {
+                        point.X = 200;
+                        createButton("Next", true);
+                        point.X = 100;
+                        createButton("Back", false);
+                    }
+                    if (questionBlock.Count != 0 && createQuestionCounter <= questionBlock.Count)
+                    {
+                        point.X = 200;
+                        createButton("Next", true);
+                        point.X = 100;
+                        createButton("Back", true);
+                    }
+                    point.Y = pointy + 70;
+                    AsciCounter = questionBlock[createQuestionCounter].Answers.Count;
+                }
+
+
+            }
             if (button.Text == "AddPage")
             {
                 if (createQuestionCounter != -1)
@@ -564,6 +684,8 @@ namespace Quiz
                 point.Y = 197;
                 createButton("Remove", false);
                 point.Y = 97;
+                createButton("Delete Page", true);
+                point.Y = 120;
                 createButton("AddPage", false);
                 point.X = 36;
                 point.Y = 36;
@@ -602,7 +724,21 @@ namespace Quiz
             {
                 ReadList();
                 bool q = true;
-                XmlSerializer serializer = new XmlSerializer(typeof(List<QuestionBlock>));
+
+                        XmlSerializer serializer = new XmlSerializer(typeof(List<QuestionBlock>));
+                //using (SaveFileDialog sdf = new SaveFileDialog() { Filter = "PDf file|*.pdf", ValidateNames = true })
+                //{
+                //    if (sdf.ShowDialog() == DialogResult.OK)
+                //    {
+                //        iTextSharp.text.Document doc = new iTextSharp.text.Document(PageSize.A4.Rotate());
+                //        PdfWriter.GetInstance(doc, new FileStream(sdf.FileName, FileMode.Create));
+                //        doc.Open();
+                //        doc.Add(new iTextSharp.text.Paragraph(questionBlock[0].Text));
+
+                //    }
+                    
+                    
+                //}
                 for (int i = 0; i < Controls.Count*4; i++)
                 {
                     foreach (var item in Controls)
@@ -610,16 +746,16 @@ namespace Quiz
                         if(q &&  item is TextBox textBox)
                         {
                             q = false;
-                            if(Directory.Exists("Quiz"))
+                            if(Directory.Exists("Quiz") && textBox.Text!=string.Empty)
                             {
                                 StreamWriter sw = new StreamWriter($"Quiz\\{textBox.Text}.xml");
                                 serializer.Serialize(sw, questionBlock);
                             }
-                            else
+                            else if( textBox.Text != string.Empty)
                             {
+                                Directory.CreateDirectory("Quiz");
                                StreamWriter sw = new StreamWriter($"Quiz\\{textBox.Text}.xml");
                                 serializer.Serialize(sw, questionBlock);
-                                Directory.CreateDirectory("NewQuiz");
                             }
                         }
                     }
@@ -672,7 +808,9 @@ namespace Quiz
                     point.Y = 197;
                     createButton("Remove", false);
                     point.Y = 97;
-                    createButton("AddPage", true);
+                createButton("Delete Page", true);
+                point.Y = 120;
+                createButton("AddPage", true);
                     point.X = 36;
                     point.Y = 36;
                     createButton("Save", false);
@@ -728,7 +866,9 @@ namespace Quiz
                     point.Y = 197;
                     createButton("Remove", false);
                     point.Y = 97;
-                    createButton("AddPage", true);
+                createButton("Delete Page", true);
+                point.Y = 120;
+                createButton("AddPage", true);
                     point.X = 36;
                     point.Y = 36;
                     createButton("Save", false);
@@ -757,6 +897,13 @@ namespace Quiz
         {
             if (a == 0)
             {
+
+
+
+
+
+
+
 
                 //QuestionBlock questionBloc = new QuestionBlock();
                 //questionBloc.id = 100;
@@ -888,14 +1035,13 @@ namespace Quiz
             point.X = 803;
             point.Y = 97;
             createButton("AddPage", true);
-           // ProgramLoad();
+          
         }
-      
 
         private void Form3_DragDrop(object sender, DragEventArgs e)
         {
-            string[] droppedFiles = (string[])e.Data.GetData(DataFormats.FileDrop);
-            foreach (var item in droppedFiles)
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            foreach (var item in files)
             {
                 MessageBox.Show(item);
             }
@@ -903,9 +1049,8 @@ namespace Quiz
 
         private void Form3_DragEnter(object sender, DragEventArgs e)
         {
-            e.Effect = DragDropEffects.Copy;
+            e.Effect = DragDropEffects.All;
+           
         }
-
-       
     }
 }
